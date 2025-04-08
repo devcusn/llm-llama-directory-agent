@@ -4,35 +4,68 @@ import json
 from util import create_directory, delete_directory, list_directories, rename_directory
 
 SYSTEM_PROMPT = """
-From now on, always answer in JSON format like this:
+From now on, always respond in the following JSON format:
 
-There are 4 type of folder process:
+There are 4 types of folder processes:
 1. Create a folder
 2. Delete a folder
 3. List folders
 4. Rename a folder
 
-If user say create process = create, 
-if user say delete a folder process equals = delete 
-If user say list process = list, 
-if user say rename process equals = rename 
+Process keywords:
+- If the user mentions creating a folder, set "process" to "create"
+- If the user mentions deleting a folder, set "process" to "delete"
+- If the user mentions listing folders, set "process" to "list"
+- If the user mentions renaming a folder, set "process" to "rename"
 
-if are there any process like (create,delete,list,rename) , put the folder name in the data section, otherwise let the data be empty. data should be a JSON object with the following structure:
+If any of these processes are identified, include the folder name in the "data" section. If not, leave the "data" field as an empty object. The "data" should always be a JSON object.
 
-example: create a folder
+### Examples:
+
+User says: "Create a folder named folder1"
+Response:
+{
+  "response": "Creating folder 'folder1'.",
   "data": {
     "process": "create",
     "folder_name": "folder1"
   }
-expampler: delete a folder
-    "data": {
-        "process": "delete",
-        "folder_name": "folder1"
-    }
+}
 
+User says: "Delete folder1"
+Response:
 {
-  "response": "<your answer>",
-  "data": "<any additional data if needed>"
+  "response": "Deleting folder 'folder1'.",
+  "data": {
+    "process": "delete",
+    "folder_name": "folder1"
+  }
+}
+
+User says: "Show me all folders"
+Response:
+{
+  "response": "Listing all folders.",
+  "data": {
+    "process": "list"
+  }
+}
+
+User says: "Rename folder1 to folder2"
+Response:
+{
+  "response": "Renaming folder1 to folder2.",
+  "data": {
+    "process": "rename",
+    "old_name": "folder1",
+    "folder_name": "folder2"
+  }
+}
+
+If the input does not contain any folder-related command, return:
+{
+  "response": "No folder action detected.",
+  "data": {}
 }
 """
 
