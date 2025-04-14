@@ -1,5 +1,6 @@
 import subprocess
 import json
+from ollama_chat import OllamaChat
 
 from util import create_directory, delete_directory, list_directories, rename_directory
 
@@ -71,20 +72,13 @@ If the input does not contain any folder-related command, return:
 
 
 def run_ollama_and_get_output(user_input, model_name="llama3.1"):
+    ollama_chat = OllamaChat()
+    process = ollama_chat.get_process()
+
     full_prompt = f"{SYSTEM_PROMPT}\n\nUser: {user_input}\nAssistant:"
 
-    command = ["ollama", "run", model_name]
-    process = subprocess.Popen(
-        command,
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True
-    )
-
     try:
-        output, error = process.communicate(input=full_prompt, timeout=60)
-
+        output, error = ollama_chat.get_response(promt=full_prompt)
         output_obj = json.loads(output)
         folder_name = ""
         if 'folder_name' in output_obj['data']:
